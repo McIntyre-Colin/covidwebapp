@@ -36,10 +36,9 @@ class Chart(models.Model):
     day = models.CharField(max_length = 2, default='ak')
     month = models.CharField(max_length = 15, choices= MONTH)
     year = models.CharField(max_length = 15, choices= YEAR)
-    #maybe move this to the state entry field
-    stateAbr = models.CharField(max_length=2)
     filter_field = models.CharField(max_length = 40,choices=DATA_FIELDS)
 
+#Need to fill out
 STATES = [
     ('ca','CA'), ('pa','PA'), ('ak','AK')
 ]

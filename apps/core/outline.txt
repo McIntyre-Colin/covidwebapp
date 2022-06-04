@@ -1,4 +1,10 @@
 Adding Chart WOrkflow:
+
+TO-DO:
+Create Chart --> Edit Chart --> User Page
+
+
+
 User goes to 'your charts'
     if the user has plots it displays them on their page
        and gives them an edit button, delete, and create
@@ -12,7 +18,11 @@ Create Plot Page:
     and title.
     SAVE
     redirects to the edit plot page where up to 6 states can be added
-    
+   TO-DO:
+   Update Model (remove stateabr, include plot_svg)
+   Update View function (just the django form with the form.html and redirect to edit)
+   URL Pathing
+
 Edit Plot Page:
     States added from drop down menus 
     (maybe one menue that and the user adds states one at a time)
@@ -21,6 +31,19 @@ Edit Plot Page:
     SAVE
     redirects back to the user page where the plot should be displayed in chronical order
 
+    TO-DO:
+    Create HTML with forms and ability to show plot as it updates
+    -Have save button redirect to user page
+    Create view function which contains graphing function
+    URL Pathing
+
+User Page:
+    Display all plots and provide all functionality (edit, delete)
+    
+    TO-DO:
+    Update view function to remove plot function and redirect to creat page if applicable
+    Update HTML to display plots with buttons for edit and delete
+    -For loop
 
 Landing Page:
     shows all user plots with an up/down vote feature
