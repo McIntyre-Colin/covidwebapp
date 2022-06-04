@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+{% include "snippets/navbar.html" %}
+
+{% block content %}
+
+   
+        {{ rendered_chart|safe}}
+    </br>
+    
+
+{% endblock content %}

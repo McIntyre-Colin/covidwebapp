@@ -2,15 +2,17 @@ from django.urls import path
 
 from apps.core import views
 
-# In this example, we've separated out the views.py into a new file
 urlpatterns = [
-    path('', views.index),
-    path('state-data', views.state_data),
-    path('comparison/', views.comparison)
+    # CRUD views for ReadingLists
+    path('', views.reading_list_home, name="home"),
+    path('nationwide/', views.state_data),
+    path('charts/<username>/', views.user_page, name='userPage'),
+    path('charts/<username>/create/',views.create_chart),
+    path('list/<int:list_id>/', views.reading_list_details),
+    path('list/create/', views.reading_list_create),
+    path('list/delete/<int:list_id>/', views.reading_list_delete),
+
+    # CRUD views for editing Books within ReadingLists
+    path('book-create/<int:list_id>/', views.reading_list_create_book),
+    path('book-delete/<int:book_id>/', views.reading_list_delete_book),
 ]
-
-# Boilerplate to include static files
-from django.conf import settings
-from django.conf.urls.static import static
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
