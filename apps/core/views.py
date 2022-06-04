@@ -116,7 +116,7 @@ def user_page(request, username):
 
 def create_chart(request, username):
     if request.method == 'POST':
-        # Create a form instance and populate it with data from the request
+        # Create a form instance where the user decides on the format of the plot
         form = AddChartForm(request.POST)
         if form.is_valid():
             # If we had omitted commit=False, then the user would not have been
@@ -124,7 +124,8 @@ def create_chart(request, username):
             new_chart = form.save(commit=False)
             new_chart.creator_user = request.user
             new_chart.save()
-            return redirect('/charts/'+username+'/')
+            #redirect user to the edit page where they'll add state information
+            return redirect('/charts/'+username+'/'+new_chart.id+'/')
     else:
         # if a GET  we'll create a blank form
         form = AddChartForm()

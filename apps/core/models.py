@@ -37,6 +37,8 @@ class Chart(models.Model):
     month = models.CharField(max_length = 15, choices= MONTH)
     year = models.CharField(max_length = 15, choices= YEAR)
     filter_field = models.CharField(max_length = 40,choices=DATA_FIELDS)
+    title = models.CharField(max_length=100,default='Informative Title!')
+    #add plot_svg, need to figure out data type
 
 #Need to fill out
 STATES = [

@@ -3,6 +3,19 @@ Adding Chart WOrkflow:
 TO-DO:
 Create Chart --> Edit Chart --> User Page
 
+Where im at:
+Created Models
+Finished create chart
+Started Edit Chart
+-need to create another graphing_values function
+-need to create html 
+--will be restructuring forms and displaying chart underneath
+--needs delete functionality (can be included in html but not in views yet)
+
+User Page
+-Need to format all of the html
+-Need to update graph_values to take all information and loop through correctly
+
 
 
 User goes to 'your charts'
