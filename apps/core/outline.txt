@@ -1,0 +1,34 @@
+Adding Chart WOrkflow:
+User goes to 'your charts'
+    if the user has plots it displays them on their page
+       and gives them an edit button, delete, and create
+    if no plots then takes them to the create plot page
+
+Create Plot Page:
+   ## Accessible from both the user page with plots, and by
+   ## getting redirected from 'your charts' if theres no plots
+
+    Allows the user to enter date, chart type and data field
+    and title.
+    SAVE
+    redirects to the edit plot page where up to 6 states can be added
+    
+Edit Plot Page:
+    States added from drop down menus 
+    (maybe one menue that and the user adds states one at a time)
+
+    each bar/slice of pie chart will have a delete option under the plot
+    SAVE
+    redirects back to the user page where the plot should be displayed in chronical order
+
+
+Landing Page:
+    shows all user plots with an up/down vote feature
+    user must be logged in to vote but can view all plots
+
+NationWide Data:
+    Base Functionality
+    - Display data from all states in tabular format
+
+    Ideal FUnctionality
+    - Allows user to select filter fields and maybe states

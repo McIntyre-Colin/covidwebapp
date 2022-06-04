@@ -36,11 +36,25 @@ class Chart(models.Model):
     day = models.CharField(max_length = 2, default='ak')
     month = models.CharField(max_length = 15, choices= MONTH)
     year = models.CharField(max_length = 15, choices= YEAR)
+    #maybe move this to the state entry field
     stateAbr = models.CharField(max_length=2)
     filter_field = models.CharField(max_length = 40,choices=DATA_FIELDS)
 
+STATES = [
+    ('ca','CA'), ('pa','PA'), ('ak','AK')
+]
 
-
+class StateEntry(models.Model):
+    plot_id = models.ForeignKey(
+        Chart,
+        on_delete=models.CASCADE,
+    )
+    state_1 = models.CharField(max_length=2, choices=STATES)
+    state_2 = models.CharField(max_length=2, choices=STATES)
+    state_3 = models.CharField(max_length=2, choices=STATES)
+    state_4 = models.CharField(max_length=2, choices=STATES)
+    state_5 = models.CharField(max_length=2, choices=STATES)
+    state_6 = models.CharField(max_length=2, choices=STATES)
 
 
 
