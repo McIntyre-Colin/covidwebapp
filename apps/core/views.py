@@ -8,7 +8,7 @@ from django.core.exceptions import SuspiciousOperation
 
 from apps.accounts.models import User
 from apps.core.models import Book, ReadingList, Chart
-from apps.core.forms import AddBookForm, AddReadingListForm, AddChartForm
+from apps.core.forms import AddBookForm, AddReadingListForm, AddChartForm, AddStateEntryForm
 
 
 # Start of my changes
@@ -134,6 +134,23 @@ def create_chart(request, username):
         'form_title': 'New Chart',
     }
     return render(request, 'pages/form_page.html', context)
+
+
+def edit_chart(request, username, plot_id):
+    #Getiting user information
+    user = User.objects.get(username=username)
+    #Getting information associated with the plot
+    #Title, filter fields, date for plotting
+    plot = Chart.objects.get(id=plot_id)
+    form = AddStateEntryForm(request.POST)
+    if request.method == 'POST':
+        if form.is_valid():
+            new_state = form.save(commit = False)
+            new_state.plot_id = plot.id
+            new_state.save()
+            return redirect ('/charts/'+username+'/'+new_state.id+'/')
+
+
     # #Setting a default data type and value
     # stateAbr = ""
     # #Getting a list of state abbreviations to compare against what the user enters
