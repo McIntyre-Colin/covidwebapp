@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import SuspiciousOperation
 
 from apps.accounts.models import User
-from apps.core.models import Book, ReadingList, Chart
+from apps.core.models import Book, ReadingList, Chart, StateEntry
 from apps.core.forms import AddBookForm, AddReadingListForm, AddChartForm, AddStateEntryForm
 
 
@@ -63,30 +63,7 @@ def graphing_state_values(charts):
 
     plots_svg = plot.render()
     return plots_svg
-         
-         
-    # chart = pygal.Bar()
 
-    # for state in states:
-    #     response = requests.get('https://api.covidtracking.com/v1/states/'+ state +'/20200501.json')     
-    #     state_data = response.json()
-    #     state_dict[str(state_data['state'])] = state_data['positive']
-    # sorted_state_keys = sorted(state_dict, key=state_dict.get, reverse=True)
-    # #checking if sort worked
-    # print(sorted_state_keys)
-    # print(state_dict)
-
-    # #Graphing the sorted list
-    # for k in sorted_state_keys:
-    #     v =state_dict[k]
-    #     print(k)
-    #     print(state_dict)
-    #     value = int(v)
-    #     label = str(k)
-    #     chart.add(label, value)
-
-    # chart_svg = chart.render()
-    # return chart_svg
 
 def user_page(request, username):
 
@@ -135,6 +112,62 @@ def create_chart(request, username):
     }
     return render(request, 'pages/form_page.html', context)
 
+def plotting_edit_page(plot, states_for_current_plot):
+
+    if plot.chart_type == 'bar':
+        active_chart = pygal.Bar()
+    else:
+        active_chart = pygal.Pie()
+
+    states = [
+        states_for_current_plot.state_1,
+        states_for_current_plot.state_2,
+        states_for_current_plot.state_3,
+        states_for_current_plot.state_4,
+        states_for_current_plot.state_5,
+        states_for_current_plot.state_6,
+    ]
+    #removes empty cells in list incase less than 6 states were entered
+    #Would like to automate this better/optimize the DB structure
+    for state in states:
+        if state == True:
+            continue
+        else:
+            states.remove(state)
+    #Creating a valid api request from information from the Chart (plot) and StateEntry (states_for_current_plot) objects
+    #And plotting each state value individually
+    #I think this is the function that'll need to be edited for the delete functionality
+    for state in states:
+        print('------------------')
+        #ensuring valid api request
+        print(plot.year + plot.month + str(plot.day))
+        #ensuring valid url
+        print('url', 'https://api.covidtracking.com/v1/states/'+ state.lower() +'/'+ plot.year + plot.month + str(plot.day) +'.json')
+        print('------------------')
+        
+        response = requests.get('https://api.covidtracking.com/v1/states/'+ state +'/'+ plot.year + plot.month + str(plot.day) +'.json')
+        state_data = response.json()
+
+        #begins process for organizing data in descending order
+    
+        state_dict[state_data['state']] = state_data[plot.filter_field]
+        print(state_dict)
+        sorted_state_keys = sorted(state_dict, key=state_dict.get, reverse=True)
+        print(sorted_state_keys)
+
+        #foor loop to add sorted data to the actual chart
+        for k in sorted_state_keys:
+            v =state_dict[k]
+            print(v)
+            print(k)
+            print(state_dict)
+            value = int(v)
+            label = str(k)
+            active_chart.add(label, value)
+
+    active_chart_svg = active_chart.render()
+    return active_chart_svg
+
 
 def edit_chart(request, username, plot_id):
     #Getiting user information
@@ -145,10 +178,23 @@ def edit_chart(request, username, plot_id):
     form = AddStateEntryForm(request.POST)
     if request.method == 'POST':
         if form.is_valid():
-            new_state = form.save(commit = False)
-            new_state.plot_id = plot.id
-            new_state.save()
-            return redirect ('/charts/'+username+'/'+new_state.id+'/')
+            new_stateSet = form.save(commit = False)
+            new_stateSet.plot_id = plot.id
+            new_stateSet.save()
+            return redirect ('/charts/'+username+'/'+new_stateSet.id+'/')
+    else:
+        form = AddStateEntryForm()
+
+    states_for_current_plot = StateEntry.objects.get(id = plot.id)
+    
+    active_chart_svg = plotting_edit_page(plot, states_for_current_plot)
+
+    context = {
+        'plot': plot,
+        'rendered_chart': active_chart_svg.decode(),
+        'form': form,
+    }
+    return render(request, '/pages/edit_page.html', context)
 
 
     # #Setting a default data type and value

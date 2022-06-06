@@ -1,5 +1,15 @@
 Adding Chart WOrkflow:
 
+IDEAS:
+-STORE SVG OUTPUT FROM PYGAL!!!!!!!!!!
+ I think this revmoves the need for the following ideas??
+ 
+-Store the api request data in the model to save time
+ instead of pulling from api each time a page is loaded
+
+-maybe store the sorted keys as well so it can check if any edits 
+ have been made, and if not, spit out the original plot
+
 TO-DO:
 Create Chart --> Edit Chart --> User Page
 
