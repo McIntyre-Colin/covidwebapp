@@ -5,7 +5,7 @@ from apps.core.models import Book, ReadingList, Chart, StateEntry
 class AddChartForm(forms.ModelForm):
     class Meta:
         model = Chart
-        fields = ['title','chart_type', 'day', 'month', 'year', 'stateAbr','filter_field']
+        fields = ['title','chart_type', 'day', 'month', 'year','filter_field']
 
 class AddStateEntryForm(forms.ModelForm):
     class Meta:

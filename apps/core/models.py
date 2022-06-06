@@ -46,7 +46,7 @@ STATES = [
 ]
 
 class StateEntry(models.Model):
-    plot_id = models.ForeignKey(
+    plot = models.ForeignKey(
         Chart,
         on_delete=models.CASCADE,
     )
