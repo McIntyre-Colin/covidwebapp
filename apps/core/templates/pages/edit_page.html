@@ -20,14 +20,4 @@
     </div>
 </div>
 
-<!-- GOAL, Only try to display chart after data is enetered -->
-<!-- Would be cool to just have blank plot to start -->
-{% if plot.id > 0 %}
-    {{ rendered_chart|safe }}
-{% endif %}
-
-<!-- Add Delete functionality and save functionality -->
-<!-- Most likely going to take the form of a block of html that repeats for the
-number of states entered and is spaced accordingly under the graph
-for state in states button > state< link to delete -->
 {% endblock content %}

@@ -10,7 +10,7 @@ class AddChartForm(forms.ModelForm):
 class AddStateEntryForm(forms.ModelForm):
     class Meta:
         model = StateEntry
-        exclude = ['plot_id']
+        exclude = ['plot']
 
 
 

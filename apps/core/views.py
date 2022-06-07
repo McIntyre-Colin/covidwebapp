@@ -1,4 +1,4 @@
-from multiprocessing import context
+
 import requests
 import pygal
 from django.shortcuts import render, redirect
@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import SuspiciousOperation
 
 from apps.accounts.models import User
-from apps.core.models import Book, ReadingList, Chart, StateEntry
+from apps.core.models import Book, ReadingList, Chart, StateEntry, STATES
 from apps.core.forms import AddBookForm, AddReadingListForm, AddChartForm, AddStateEntryForm
 
 
@@ -43,64 +43,7 @@ def graphing_state_values(plots):
             active_chart = pygal.Bar()
         else:
             active_chart = pygal.Pie()
-
-        states = [
-            states_for_current_plot.state_1,
-            states_for_current_plot.state_2,
-            states_for_current_plot.state_3,
-            states_for_current_plot.state_4,
-            states_for_current_plot.state_5,
-            states_for_current_plot.state_6,
-        ]
-        #removes empty cells in list incase less than 6 states were entered
-        #Would like to automate this better/optimize the DB structure
-        for state in states:
-            if state == True:
-                continue
-            else:
-                states.remove(state)
-        #Creating a valid api request from information from the Chart (plot) and StateEntry (states_for_current_plot) objects
-        #And plotting each state value individually
-        #I think this is the function that'll need to be edited for the delete functionality
-        for state in states:
-            print('------------------')
-            #ensuring valid api request
-            print(plot.year + plot.month + str(plot.day))
-            #ensuring valid url
-            print('url', 'https://api.covidtracking.com/v1/states/'+ state.lower() +'/'+ plot.year + plot.month + str(plot.day) +'.json')
-            print('------------------')
-            
-            response = requests.get('https://api.covidtracking.com/v1/states/'+ state +'/'+ plot.year + plot.month + str(plot.day) +'.json')
-            state_data = response.json()
-
-            #begins process for organizing data in descending order
-        
-            state_dict[state_data['state']] = state_data[plot.filter_field]
-            print(state_dict)
-            sorted_state_keys = sorted(state_dict, key=state_dict.get, reverse=True)
-            print(sorted_state_keys)
-
-            #foor loop to add sorted data to the actual chart
-            for k in sorted_state_keys:
-                v =state_dict[k]
-                print(v)
-                print(k)
-                print(state_dict)
-                value = int(v)
-                label = str(k)
-                active_chart.add(label, value)
-
-        active_chart_svg = active_chart.render()
-        return active_chart_svg
-
-
-def plotting_edit_page(plot, states_for_current_plot):
-
-    if plot.chart_type == 'bar':
-        active_chart = pygal.Bar()
-    else:
-        active_chart = pygal.Pie()
-
+    
     states = [
         states_for_current_plot.state_1,
         states_for_current_plot.state_2,
@@ -109,30 +52,117 @@ def plotting_edit_page(plot, states_for_current_plot):
         states_for_current_plot.state_5,
         states_for_current_plot.state_6,
     ]
+  
+    index = 0
+    indexList = []
     #removes empty cells in list incase less than 6 states were entered
     #Would like to automate this better/optimize the DB structure
-    for state in states:
-        if state == True:
-            continue
+    for state in states: 
+        if state == '':
+            indexList.append(index)
         else:
-            states.remove(state)
-    #Creating a valid api request from information from the Chart (plot) and StateEntry (states_for_current_plot) objects
+            print('YAY: ',state,' is staying!!!!')
+        print(states)
+        index+=1
+    indexList.reverse()
+    
+
+    # Was having issues deleting emoty cells in previous for loop
+    # had to reverse order of the index as to not have the index list excede bounds of new state list 
+    for index in indexList:
+        print(states[index])
+        states.remove(states[index])
+    
+    # Creating a valid api request from information from the Chart (plot) and StateEntry (states_for_current_plot) objects
     #And plotting each state value individually
-    #I think this is the function that'll need to be edited for the delete functionality
+    # I think this is the function that'll need to be edited for the delete functionality
     for state in states:
         print('------------------')
+        print(state)
         #ensuring valid api request
         print(plot.year + plot.month + str(plot.day))
         #ensuring valid url
         print('url', 'https://api.covidtracking.com/v1/states/'+ state.lower() +'/'+ plot.year + plot.month + str(plot.day) +'.json')
         print('------------------')
         
-        response = requests.get('https://api.covidtracking.com/v1/states/'+ state +'/'+ plot.year + plot.month + str(plot.day) +'.json')
+        response = requests.get('https://api.covidtracking.com/v1/states/'+ state.lower() +'/'+ plot.year + plot.month + str(plot.day) +'.json')
         state_data = response.json()
-
+        print(state_data)
         #begins process for organizing data in descending order
     
-        state_dict[state_data['state']] = state_data[plot.filter_field]
+        state_dict[state_data['state']] = state_data['positive']
+        print(state_dict)
+        sorted_state_keys = sorted(state_dict, key=state_dict.get, reverse=True)
+        print(sorted_state_keys)
+
+        #foor loop to add sorted data to the actual chart
+        for k in sorted_state_keys:
+            v =state_dict[k]
+            print(v)
+            print(k)
+            print(state_dict)
+            value = int(v)
+            label = str(k)
+            active_chart.add(label, value)
+
+    active_chart_svg = active_chart.render()
+    return active_chart_svg
+
+
+def plotting_edit_page(plot, states_for_current_plot):
+
+    if plot.chart_type == 'bar':
+        active_chart = pygal.Bar()
+    else:
+        active_chart = pygal.Pie()
+    
+    states = [
+        states_for_current_plot.state_1,
+        states_for_current_plot.state_2,
+        states_for_current_plot.state_3,
+        states_for_current_plot.state_4,
+        states_for_current_plot.state_5,
+        states_for_current_plot.state_6,
+    ]
+  
+    index = 0
+    indexList = []
+    #removes empty cells in list incase less than 6 states were entered
+    #Would like to automate this better/optimize the DB structure
+    for state in states: 
+        if state == '':
+            indexList.append(index)
+        else:
+            print('YAY: ',state,' is staying!!!!')
+        print(states)
+        index+=1
+    indexList.reverse()
+    
+
+    # Was having issues deleting emoty cells in previous for loop
+    # had to reverse order of the index as to not have the index list excede bounds of new state list 
+    for index in indexList:
+        print(states[index])
+        states.remove(states[index])
+    
+    #Creating a valid api request from information from the Chart (plot) and StateEntry (states_for_current_plot) objects
+    #And plotting each state value individually
+    #I think this is the function that'll need to be edited for the delete functionality
+    for state in states:
+        print('------------------')
+        print(state)
+        #ensuring valid api request
+        print(plot.year + plot.month + str(plot.day))
+        #ensuring valid url
+        print('url', 'https://api.covidtracking.com/v1/states/'+ state.lower() +'/'+ plot.year + plot.month + str(plot.day) +'.json')
+        print('------------------')
+        
+        response = requests.get('https://api.covidtracking.com/v1/states/'+ state.lower() +'/'+ plot.year + plot.month + str(plot.day) +'.json')
+        state_data = response.json()
+        print(state_data)
+        #begins process for organizing data in descending order
+    
+        state_dict[state_data['state']] = state_data['positive']
         print(state_dict)
         sorted_state_keys = sorted(state_dict, key=state_dict.get, reverse=True)
         print(sorted_state_keys)
@@ -200,7 +230,7 @@ def create_chart(request, username):
     }
     return render(request, 'pages/form_page.html', context)
 
-def edit_chart_form(request, username, plot_id):
+def edit_chart(request, username, plot_id):
     #Getiting user information
     user = User.objects.get(username=username)
     #Getting information associated with the plot
@@ -213,27 +243,28 @@ def edit_chart_form(request, username, plot_id):
             new_stateSet = form.save(commit = False)
             new_stateSet.plot_id = plot.id
             new_stateSet.save()
-            return redirect ('/charts/'+username+'/'+str(plot.id)+'/')
+           
+            return redirect('/charts/' +username+ '/edit/'+str(plot_id)+'/')
     else:
         form = AddStateEntryForm()
+        
     context = {
-        'form' : form,
+      
+        'form' : form
     }
-
     return render(request, 'pages/edit_page.html', context)
 
-def edit_chart_states(request, plot_id):
+def view_edit_chart(request, username, plot_id):
     plot = Chart.objects.get(id=plot_id)
-    states_for_current_plot = StateEntry.objects.get(id = plot_id)
+    states_for_current_plot = StateEntry.objects.get(plot_id = plot_id)
     
     active_chart_svg = plotting_edit_page(plot, states_for_current_plot)
 
     context = {
         'plot': plot,
         'rendered_chart': active_chart_svg.decode(),
-    }
-    return render(request, 'pages/edit_page.html', context)
-
+            }
+    return render(request, 'pages/edit_page_plot.html', context)
 
 # Existing content/functionality to be removed/phased out
 def reading_list_home(request):
